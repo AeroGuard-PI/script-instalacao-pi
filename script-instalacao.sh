@@ -20,17 +20,22 @@ sudo apt update -y && sudo apt upgrade -y
 # 2. Verificação e Instalação do Docker e Git
 echo "[ 2/8 ] Instalando Docker e Git..."
 
+# Garante o git e o openssl instalados
+sudo apt install -y git openssl
+
 if docker -v > /dev/null 2>&1; then
-	echo "Docker já instalado no sistema"
+    echo "Docker já instalado no sistema."
 else
-	echo "Docker não instalado no sistema."
-	echo "Gostaria de instalar o Docker? [s/n]"
-	read get
-	if [ "$get" == "s" ] || [ "$get" == 'S' ]; then
-		echo "Instalando Docker..."
-		sudo apt install docker.io openssl -y
-	else
-		echo "Instalação do Docker ignorada pelo usuário."
+    echo "Docker não instalado no sistema."
+    echo "Gostaria de instalar o Docker? [s/n]"
+    read get
+    if [ "$get" == "s" ] || [ "$get" == "S" ]; then
+        echo "Instalando Docker..."
+        sudo apt install docker.io -y
+    else
+        echo "Instalação do Docker ignorada pelo usuário."
+    fi
+fi
 
 # 3. Verificação e Instalação do Java
 echo "[ 3/8 ] Verificando instalação do Java..."
