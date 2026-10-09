@@ -147,7 +147,7 @@ docker run -d \
     -e DB_HOST=aeroguard-db \
     -e DB_USER=root \
     -e DB_PASSWORD=urubu100 \
-    -e DB_NAME=AeroGuard \
+    -e DB_NAME=aeroguard \
     -v "$BASE_DIR/script-python:/app" \
     --restart always \
     aeroguard-python:1.0
