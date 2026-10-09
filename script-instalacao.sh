@@ -144,6 +144,10 @@ docker build -t aeroguard-python:1.0 .
 docker run -d \
     --name aeroguard-python \
     --network "$DOCKER_NET" \
+    -e DB_HOST=aeroguard-db \
+    -e DB_USER=root \
+    -e DB_PASSWORD=urubu100 \
+    -e DB_NAME=AeroGuard \
     -v "$BASE_DIR/script-python:/app" \
     --restart always \
     aeroguard-python:1.0
