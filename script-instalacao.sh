@@ -144,6 +144,7 @@ docker build -t aeroguard-python:1.0 .
 docker run -d \
     --name aeroguard-python \
     --network "$DOCKER_NET" \
+    -v "$BASE_DIR/script-python:/app" \
     --restart always \
     aeroguard-python:1.0
 
