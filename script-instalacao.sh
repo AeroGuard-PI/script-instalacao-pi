@@ -15,13 +15,13 @@ echo "======================================================"
 
 # 1. Atualização do Sistema Operacional
 echo "[ 1/8 ] Atualizando pacotes do sistema..."
-sudo apt update -y && sudo apt upgrade -y
+sudo apt update -y > /dev/null 2>&1 && sudo apt upgrade -y > /dev/null 2>&1
 
 # 2. Verificação e Instalação do Docker e Git
 echo "[ 2/8 ] Instalando Docker e Git..."
 
 # Garante o git e o openssl instalados
-sudo apt install -y git openssl
+sudo apt install -y git openssl > /dev/null 2>&1
 
 if docker -v > /dev/null 2>&1; then
     echo "Docker já instalado no sistema."
@@ -31,9 +31,10 @@ else
     read get
     if [ "$get" == "s" ] || [ "$get" == "S" ]; then
         echo "Instalando Docker..."
-        sudo apt install docker.io -y
+        sudo apt install docker.io -y > /dev/null 2>&1
     else
-        echo "Instalação do Docker ignorada pelo usuário."
+        echo "Instalação do Docker ignorada pelo usuário. O script não pode continuar sem o Docker."
+        exit 1
     fi
 fi
 
@@ -47,7 +48,7 @@ else
     read get
     if [ "$get" == "s" ] || [ "$get" == "S" ]; then
         echo "Instalando OpenJDK 17..."
-        sudo apt install openjdk-17-jre -y
+        sudo apt install openjdk-17-jre -y > /dev/null 2>&1
     else
         echo "Instalação do Java ignorada pelo usuário."
     fi
@@ -55,8 +56,8 @@ fi
 
 # 4. Habilitação do Serviço Docker
 echo "[ 4/8 ] Iniciando serviços Docker..."
-sudo systemctl start docker
-sudo systemctl enable docker
+sudo systemctl start docker > /dev/null 2>&1
+sudo systemctl enable docker > /dev/null 2>&1
 
 # 5. Criação do Usuário do Projeto
 echo "[ 5/8 ] Configurando usuário do sistema: ${USER_PI}..."
@@ -73,7 +74,7 @@ sudo usermod -aG docker "$USER_PI"
 # 6. Criação da Rede Docker
 echo "[ 6/8 ] Criando rede Docker (${DOCKER_NET})..."
 if ! docker network ls | grep -q "$DOCKER_NET"; then
-    docker network create "$DOCKER_NET"
+    docker network create "$DOCKER_NET" > /dev/null 2>&1
     echo "Rede ${DOCKER_NET} criada com sucesso!"
 else
     echo "Rede ${DOCKER_NET} já existente."
@@ -86,17 +87,17 @@ cd "$BASE_DIR"
 
 if [ ! -d "BancodeDados" ]; then
     echo "Clonando Banco de Dados..."
-    sudo git clone https://github.com/AeroGuard-PI/BancodeDados.git
+    sudo git clone https://github.com/AeroGuard-PI/BancodeDados.git > /dev/null 2>&1
 fi
 
 if [ ! -d "Site" ]; then
     echo "Clonando Site..."
-    sudo git clone https://github.com/AeroGuard-PI/Site.git
+    sudo git clone https://github.com/AeroGuard-PI/Site.git > /dev/null 2>&1
 fi
 
 if [ ! -d "script-python" ]; then
     echo "Clonando Script Python..."
-    sudo git clone https://github.com/AeroGuard-PI/script-python.git
+    sudo git clone https://github.com/AeroGuard-PI/script-python.git > /dev/null 2>&1
 fi
 
 # Ajusta as permissões de tudo para o usuário do projeto
