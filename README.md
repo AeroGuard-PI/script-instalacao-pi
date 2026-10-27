@@ -2,9 +2,7 @@
 
 Este repositório tem dois scripts para EC2s Ubuntu, preferencialmente 24.04. A central hospeda MySQL e site. As outras EC2s executam os coletores Java e Python.
 
-Os projetos continuam em repositórios separados. A central baixa [Site](https://github.com/AeroGuard-PI/Site), que contém o SQL e os seeds em src/database. O cliente baixa [java-client](https://github.com/AeroGuard-PI/java-client) e [script-python](https://github.com/AeroGuard-PI/script-python). Cada instalação busca a branch main, constrói as imagens e remove os arquivos temporários.
-
-Antes da primeira instalação, publique as versões correspondentes dos três projetos na main de cada repositório. Depois publique os dois scripts neste repositório. Não basta editar os arquivos em uma pasta local: a EC2 baixa o que está publicado no GitHub.
+A EC2 baixa o que está publicado no GitHub.
 
 ## Preparar as EC2s
 
@@ -16,7 +14,7 @@ As instâncias precisam de saída para a internet para baixar pacotes, repositó
 | Central: MySQL | 3306 | EC2s monitoradas |
 | EC2s: acesso SSH | 22 | Seu IP de acesso |
 
-Nas regras internas, use os IPs privados ou o Security Group das EC2s monitoradas como origem. Não abra 3306 para a internet. Os scripts não criam instâncias nem alteram Security Groups.
+Nas regras internas, use os IPs privados ou o Security Group das EC2s monitoradas como origem. Não abra 3306 para a internet. 
 
 Em cada EC2, clone apenas este repositório:
 
@@ -52,9 +50,9 @@ Informe o endereço interno da central e faça login com um usuário cadastrado 
 | joao.silva@email.com | SenhaSegura123 | Aeroporto de Guarulhos |
 | maria.oliveira@email.com | SenhaSegura456 | Aeroporto de Congonhas |
 
-Cada EC2 real entra como uma nova máquina pelo par empresa + MAC normalizado. Os servidores fictícios do seed permanecem como demonstração. Hostname não identifica a máquina.
+Cada EC2 entra como uma nova máquina pelo par empresa + MAC normalizado. Os servidores fictícios do seed permanecem como demonstração. Hostname não identifica a máquina.
 
-Java coleta download e upload em Mbps por interface. Python coleta CPU, memória e ocupação do disco principal da EC2. Os componentes são configurados separadamente: disponibilidade 1 permite coletar e 0 permanece inativo, inclusive após reinstalação. A instalação só anuncia sucesso depois de conferir novas capturas dos componentes ativos.
+Java coleta download e upload em Mbps por interface. Python coleta CPU, memória e ocupação do disco principal da EC2. Os componentes são configurados separadamente: disponibilidade 1 permite coletar e 0 permanece inativo, inclusive após reinstalação.
 
 Os containers compartilham a rede e o hostname da EC2 e leem o sistema de arquivos do host em /host, somente para leitura. Os dados medidos são da VM EC2. Os containers iniciam com a EC2, desde que não tenham sido parados manualmente.
 
@@ -82,6 +80,4 @@ sudo docker logs --tail 100 aeroguard-java
 sudo docker logs --tail 100 aeroguard-python
 ```
 
-A configuração fica em /opt/aeroguard/config e contém credenciais técnicas. Preserve suas permissões e guarde a configuração da central junto com o backup do banco. O volume aeroguard-mysql-data não é apagado nas reinstalações e os seeds não são repetidos.
-
-Um banco de uma instalação anterior exige backup e revisão. O script bloqueia a substituição automática e não faz migração de outro modelo. Esta instalação é para a POC na VPC; as credenciais técnicas compartilhadas não implementam isolamento de acesso por empresa.
+A configuração fica em /opt/aeroguard/config e contém credenciais técnicas.
