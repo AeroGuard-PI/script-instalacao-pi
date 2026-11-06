@@ -54,7 +54,7 @@ echo "-> Configurando aliases globais de apresentacao..."
 ENV_FILE="$(pwd)/coletor.env"
 sudo tee /etc/profile.d/aeroguard.sh > /dev/null << EOF
 # Aliases globais de apresentacao - Cliente Edge AeroGuard
-alias cliente='echo "=== CONTAINERS DE TELEMETRIA ===" && sudo docker ps --format "table {{.Names}}\t{{.Status}}" && echo "" && echo "=== LOGS RECENTES (TELEMETRIA PYTHON & JAVA) ===" && sudo docker logs --tail 6 aeroguard-python 2>/dev/null && echo "---" && sudo docker logs --tail 6 aeroguard-java 2>/dev/null'
+alias cliente='echo "=== CONTAINERS DE TELEMETRIA ===" && sudo docker ps --format "table {{.Names}}\t{{.Status}}" && echo "" && echo "=== TELEMETRIA HARDWARE (PYTHON) ===" && sudo docker logs --tail 4 aeroguard-python 2>/dev/null && echo "" && echo "=== TELEMETRIA REDE (JAVA) ===" && sudo docker logs --tail 4 aeroguard-java 2>/dev/null'
 
 alias py='sudo docker run --rm -it --network host --env-file ${ENV_FILE} -v /:/host:ro -e HOST_ROOT=/host aeroguard-python python script-coleta-python.py'
 EOF
