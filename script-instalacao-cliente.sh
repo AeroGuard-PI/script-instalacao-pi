@@ -37,6 +37,11 @@ sudo docker run --rm -it --network host \
     -e AEROGUARD_ENV=/config/coletor.env \
     aeroguard-python python configurar.py --configurar
 
+if ! grep -q "^SLACK_BOT_TOKEN=" coletor.env 2>/dev/null; then
+    read -p "Token do Bot Slack (opcional, Enter para pular): " SLACK_TOKEN_INPUT
+    echo "SLACK_BOT_TOKEN=${SLACK_TOKEN_INPUT}" >> coletor.env
+fi
+
 # 6. Subindo os containers em segundo plano com restart automatico
 echo "-> Iniciando monitoramento em segundo plano..."
 sudo docker rm -f aeroguard-python aeroguard-java > /dev/null 2>&1 || true
