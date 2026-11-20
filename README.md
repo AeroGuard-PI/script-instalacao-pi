@@ -30,7 +30,25 @@ curl -fsSL "https://raw.githubusercontent.com/AeroGuard-PI/script-instalacao-pi/
 
 ---
 
-## 3. Servidores Monitorados (Coletores Cliente)
+## 3. Central de testes (Docker Compose e branch especifica)
+
+Este instalador cria uma Central **paralela e isolada** para validar uma branch do repositório do site. Ele clona somente a branch informada, constrói localmente a imagem `aeroguard-site-teste` com o `Dockerfile` daquela branch e inicializa um banco novo com `AeroGuard.sql`, `seed-componentes.sql` e `seed-dadosMock.sql` da mesma branch. Não utiliza a imagem `hnrq7/aeroguard-site`, nem compartilha containers, rede, volume ou `.env` com a produção.
+
+Informe a branch no comando (não há branch padrão):
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/AeroGuard-PI/script-instalacao-pi/main/script-instalacao-docker-compose-teste.sh" -o script-instalacao-docker-compose-teste.sh && chmod +x script-instalacao-docker-compose-teste.sh && sudo ./script-instalacao-docker-compose-teste.sh nome-da-branch
+```
+
+Também é possível executar sem argumento; o script solicitará a branch e a validará no GitHub antes de continuar. Os recursos exclusivos são `aeroguard-site-teste`, `aeroguard-db-teste`, `aeroguard-net-teste` e `aeroguard-data-teste`. Uma nova execução não sobrescreve uma instalação de testes ou dados existentes; isso evita recriações acidentais.
+
+Acesse a aplicação em `http://IP_PUBLICO:8081`.
+
+Para os coletores que precisarem acessar esse banco de testes externamente, use `COLETOR_DB_PORT=3307`; internamente o site usa `DB_HOST=aeroguard-db-teste` e `DB_PORT=3306`.
+
+---
+
+## 4. Servidores Monitorados (Coletores Cliente)
 
 Deve ser executado em cada EC2 que será monitorada. O instalador solicita o IP interno da Central e as credenciais de um usuário cadastrado no site para associar a máquina à empresa e iniciar a coleta de CPU, memória, disco e rede.
 
@@ -72,9 +90,13 @@ As instâncias precisam de acesso à internet para instalar pacotes e baixar ima
 | --- | --- | --- |
 | Central: site e dashboard | 8080 | EC2s monitoradas e seu IP para abrir o site |
 | Central: MySQL | 3306 | EC2s monitoradas |
+| Central de testes: site | 8081 | EC2s monitoradas e seu IP para abrir o site de testes |
+| Central de testes: MySQL | 3307 | Somente Security Group ou IPs privados das EC2s autorizadas |
 | EC2s: acesso SSH | 22 | Seu IP de acesso |
 
 Nas regras internas do Security Group, libere a porta 3306 apenas para o Security Group ou bloco de IP privado das EC2s monitoradas. Não exponha a porta 3306 para a internet.
+
+Para testes, aplique a mesma restrição à porta **3307**: permita-a apenas às EC2s autorizadas a executar coletores de teste. Não abra MySQL para a internet.
 
 ---
 
@@ -93,6 +115,14 @@ Na Central:
 ```bash
 sudo docker logs --tail 100 -f aeroguard-db
 sudo docker logs --tail 100 -f aeroguard-site
+```
+
+Na Central de testes:
+```bash
+sudo docker logs --tail 100 -f aeroguard-db-teste
+sudo docker logs --tail 100 -f aeroguard-site-teste
+# ou, no diretório da instalação:
+sudo docker compose --env-file /opt/aeroguard-teste/.env -f /opt/aeroguard-teste/docker-compose-teste.yml logs -f
 ```
 
 Nos servidores monitorados:
