@@ -28,6 +28,29 @@ if [ "$#" -gt 1 ]; then
     fail "uso: sudo $0 [nome-da-branch]"
 fi
 
+command -v apt-get >/dev/null 2>&1 || fail "este instalador foi preparado para Ubuntu/Debian com apt"
+
+echo "[ 1/5 ] Atualizando pacotes do sistema..."
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+
+echo "[ 2/5 ] Instalando dependencias..."
+DEBIAN_FRONTEND=noninteractive apt-get install -y curl git openssl
+if ! command -v docker >/dev/null 2>&1; then
+    echo "          Instalando Docker..."
+    DEBIAN_FRONTEND=noninteractive apt-get install -y docker.io
+fi
+systemctl enable --now docker
+
+echo "[ 3/5 ] Conferindo Docker Compose..."
+if ! docker compose version >/dev/null 2>&1 && ! command -v docker-compose >/dev/null 2>&1; then
+    # So instala o binario quando nao existe Compose; assim uma instalacao de
+    # producao ja configurada nao tem sua versao global substituida.
+    curl -fsSL "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+        -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+fi
+
 BRANCH="${1:-}"
 if [ -z "$BRANCH" ]; then
     read -r -p "Informe a branch de testes: " BRANCH
