@@ -112,7 +112,7 @@ PUBLIC_IP="$(curl -fsS --max-time 3 https://ifconfig.me 2>/dev/null || echo loca
 cat > "$ENV_FILE" <<EOF
 # Arquivo exclusivo da instalacao de testes. Nao copie para producao.
 TEST_BRANCH=$BRANCH
-AMBIENTE_PROCESSO=teste
+AMBIENTE_PROCESSO=desenvolvimento
 APP_PORT=8080
 APP_HOST=0.0.0.0
 DB_HOST=$DB_CONTAINER
